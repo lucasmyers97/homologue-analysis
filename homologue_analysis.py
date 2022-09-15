@@ -139,6 +139,15 @@ def main():
     step_pairs = get_step_pairs(mz_data, errors, step_size)
     step_triples = get_step_triples(step_pairs)
 
+    for step_triple in step_triples:
+        print("Value: {}, Error: {}".format(mz_data[step_triple[0]], 
+                                            errors[step_triple[0]]))
+        print("Value: {}, Error: {}".format(mz_data[step_triple[1]], 
+                                            errors[step_triple[1]]))
+        print("Value: {}, Error: {}".format(mz_data[step_triple[2]], 
+                                            errors[step_triple[2]]))
+        print()
+
     step_triples_column = np.zeros(mz_data.shape, dtype=np.int64)
     for step_triple in step_triples:
         for idx in step_triple:
