@@ -9,6 +9,7 @@ up to the errors associated with the points.
 
 import tkinter as tk
 from tkinter.filedialog import askopenfilename, asksaveasfilename
+import argparse
 
 import pandas as pd
 import numpy as np
@@ -30,6 +31,28 @@ def get_input_filename():
     filename = askopenfilename()
     return filename
 
+
+
+def get_commandline_args():
+
+    description = ("Read in polymer data and output marker if datapoints are "
+                   "in a homologue group -- data are in a group if their "
+                   "three consecutive values are separated by some step")
+    parser = argparse.ArgumentParser(description=description)
+    parser.add_argument('--data_column',
+                        dest='data_column',
+                        help='name of column which holds homologue data')
+    parser.add_argument('--error_column',
+                        dest='error_column',
+                        default='Error',
+                        help='name of column which holds homologue data error')
+    parser.add_argument('--step_size',
+                        dest='step_size',
+                        type=float,
+                        help='step size between consecutive homologue data values')
+    args = parser.parse_args()
+
+    return args.data_column, args.error_column, args.step_size
 
 
 def get_output_filename():
@@ -129,12 +152,13 @@ def get_step_triples(step_pairs):
 
 def main():
 
+    triplet_column, error_column, step_size = get_commandline_args()
+
     input_filename = get_input_filename()
     data = pd.read_excel(input_filename)
 
-    mz_data = data['m/z'].values
-    errors = data['Error'].values
-    step_size = data['delta m/z'][0]
+    mz_data = data[triplet_column].values
+    errors = data[error_column].values
 
     step_pairs = get_step_pairs(mz_data, errors, step_size)
     step_triples = get_step_triples(step_pairs)
